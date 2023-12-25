@@ -1,4 +1,4 @@
-from google.colab import drive
+#from google.colab import drive
 import pandas as pd
 from sklearn.model_selection import train_test_split
 import numpy as np
@@ -140,6 +140,7 @@ def train(X_train, y_train, X_test, y_test, company):
     plt.show()
 
     PATH = f"/content/Project_Monitoring_Stocks/dl_models/{company}_model.path"
+    model = model.to('cpu')
     torch.save(model.state_dict(), PATH)
     
 def predcit(model, test_data, X_test, scaler, device, company):

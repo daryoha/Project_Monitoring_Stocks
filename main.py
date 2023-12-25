@@ -167,6 +167,7 @@ async def main():
           cur.close()
           conn.close()
           user_info = pickle.loads(user_info)
+
           notif_comp_user=user_info
   await bot.polling(none_stop=True, interval=0)
 
