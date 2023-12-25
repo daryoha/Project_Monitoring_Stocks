@@ -1,5 +1,5 @@
 from header import *
-
+import header
 #ДАШЕ: функция, которая рисует график с предсказаниями
 def prediction_func(company):
     prediction_result=predict_fn(company, comp_dict, quotes_day)
@@ -10,7 +10,7 @@ def prediction_func(company):
     PATH=filename
     im=pyimgur.Imgur(CLIENT_ID)
     uploaded_image=im.upload_image(PATH, title=PATH)
-    return uploaded_image.link
+    return uploaded_image
 async def main():
   @bot.message_handler(commands=['start']) #
   async def start(message):
@@ -75,8 +75,13 @@ async def main():
 
       elif message.text == 'Посмотреть котировки':
           choice[message.chat.id]="Котировки"
-          await bot.send_poll(message.chat.id, question="Выберите, акции каких компаний вы хотите мониторить",
-              options=comp_list, allows_multiple_answers=True, is_anonymous=False)
+          markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+          buttons = list()
+          for name in comp_dict.values():
+              buttons.append(types.KeyboardButton(name))
+          markup.add(*buttons)
+          await bot.send_message(message.from_user.id, 'Выберите, что вы хотите сделать', reply_markup=markup)
+
       elif message.text=="Построить прогноз":
           choice[message.chat.id]="Предсказания"
           markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -98,64 +103,77 @@ async def main():
           await bot.send_message(message.from_user.id, 'Выберите, что вы хотите сделать', reply_markup=markup)
 
       if message.text in comp_list_pred:
-          await bot.send_message(message.from_user.id, "AAA")
           user_id = message.from_user.id
           text = (f'Компания: {message.text}\n')
           uploaded_image = prediction_func(message.text)
+          markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+          btn1 = types.KeyboardButton('Посмотреть котировки')
+          btn2 = types.KeyboardButton('Построить прогноз')
+          markup.add(btn1, btn2)
           await bot.send_message(user_id, text)
-          await bot.send_photo(user_id, uploaded_image.link)
+          await bot.send_photo(user_id, uploaded_image.link, reply_markup=markup)
+
+      if message.text in comp_dict.values():
+          header.company = message.text
+          markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+          btn1 = types.KeyboardButton('Последняя неделя')
+          btn2 = types.KeyboardButton('Последний месяц')
+          markup.add(btn1, btn2)
+          await bot.send_message(message.from_user.id, 'Выберите временной промежуток', reply_markup=markup)
 
       if message.text == "Компании для котировок":
           markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-          btn1 = types.KeyboardButton('Последний день')
-          btn2 = types.KeyboardButton('Последняя неделя')
-          btn3 = types.KeyboardButton('Последний месяц')
-          markup.add(btn1, btn2, btn3)
+          btn1 = types.KeyboardButton('Последняя неделя')
+          btn2 = types.KeyboardButton('Последний месяц')
+          markup.add(btn1, btn2)
           await bot.send_message(message.from_user, 'Выберите временной промежуток', reply_markup=markup)
 
       elif message.text.split()[0][:7]=="Последн":
           #
           user_id = message.from_user.id
-          conn = sqlite3.connect('it_user.sql')
-          cur = conn.cursor() # ссылка на контекстную область памяти #работае синх асинх
-          cur.execute('SELECT * FROM users WHERE id = ?', (user_id,))
-          table = cur.fetchall()
+          # conn = sqlite3.connect('it_user.sql')
+          # cur = conn.cursor() # ссылка на контекстную область памяти #работае синх асинх
+          # cur.execute('SELECT * FROM users WHERE id = ?', (user_id,))
+          # table = cur.fetchall()
 
-          user_cot = table[0][1]
-          cur.close()
-          conn.close()
-          user_cot = pickle.loads(user_cot)
-          #Высчитываем временной промежуток
+          # user_cot = table[0][1]
+          # cur.close()
+          # conn.close()
+          # user_cot = pickle.loads(user_cot)
+          # #Высчитываем временной промежуток
           end_date = date.today().isoformat()
           start_date=0
           time_range=message.text.split()[1]
 
-          if (time_range=="день"):
-               start_date = (date.today()-timedelta(days=1)).isoformat()
-          elif (time_range=="неделя"):
+          if (time_range=="неделя"):
                start_date = (date.today()-timedelta(days=7)).isoformat()
           elif (time_range=="месяц"):
                start_date = (date.today()-timedelta(days=30)).isoformat()
           data_user=data_days[data_days["Date"]>=start_date]
-          quote_comp_user = user_cot
-          for comp_name in quote_comp_user:
-              comp=data_user[["Date", comp_dict[comp_name]]]
-              text=(f'Компания: {comp_name}\n'
-                    f'Период: {time_range}\n')
-
-              plt.figure(figsize=(6, 4))
-              line=sns.lineplot(data=comp, x='Date', y=comp_dict[comp_name])
-              line.set(xlabel='Date', ylabel='Stock price')
-              line.set_title(f'Stock price dynamics for {comp_name} company', fontdict={'size': 10, 'weight': 'bold', 'color': 'green', 'style':'italic'})
-              plt.xticks(rotation=90)
-              filename=f'{comp_name}.png'
-              plt.savefig(filename, bbox_inches='tight')
-              PATH=filename
-              im=pyimgur.Imgur(CLIENT_ID)
-              uploaded_image=im.upload_image(PATH, title=PATH)
-              await bot.send_message(user_id, text)
-              await bot.send_photo(user_id, uploaded_image.link)
-              os.remove(filename)
+          print(header.company)
+          comp=data_user[["Date", header.company]]
+          print(0)
+          text=(f'Компания: {header.company}\n'
+                f'Период: {time_range}\n')
+          print(1)
+          plt.figure(figsize=(6, 4))
+          line=sns.lineplot(data=comp, x='Date', y=header.company)
+          line.set(xlabel='Date', ylabel='Stock price')
+          print(2)
+          line.set_title(f'Stock price dynamics for {header.company} company', fontdict={'size': 10, 'weight': 'bold', 'color': 'green', 'style':'italic'})
+          plt.xticks(rotation=90)
+          filename=f'{header.company}.png'
+          plt.savefig(filename, bbox_inches='tight')
+          PATH=filename
+          im=pyimgur.Imgur(CLIENT_ID)
+          uploaded_image=im.upload_image(PATH, title=PATH)
+          markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+          btn1 = types.KeyboardButton('Посмотреть котировки')
+          btn2 = types.KeyboardButton('Построить прогноз')
+          markup.add(btn1, btn2)
+          await bot.send_message(user_id, text)
+          await bot.send_photo(user_id, uploaded_image.link, reply_markup=markup)
+          os.remove(filename)
       elif message.text=="Компании для прогноза":
           #
           user_id = message.from_user
