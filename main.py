@@ -1,4 +1,16 @@
 from header import *
+
+#ДАШЕ: функция, которая рисует график с предсказаниями
+def prediction_func(company):
+    prediction_result=predict_fn(company, comp_dict, quotes_day)
+    fig = go.Figure(go.Scatter(x=prediction_result['Date'], y=prediction_result[comp_dict[company]],
+                        name=f"Предсказанная динамика акций компании {company} на 7 дней"))
+    filename=f"{company}.png"
+    fig.write_image(filename)
+    PATH=filename
+    im=pyimgur.Imgur(CLIENT_ID)
+    uploaded_image=im.upload_image(PATH, title=PATH)
+    return uploaded_image.link
 async def main():
   @bot.message_handler(commands=['start']) #
   async def start(message):
@@ -38,7 +50,7 @@ async def main():
           conn.close()
           #
           msg.text='Компании для котировок'
-      elif choice[pollAnswer.user.id]=="Уведомления":
+      elif choice[pollAnswer.user.id]=="Предсказания":
           for x in ops:
               res.append(comp_dict[comp_list[x]])
           #
@@ -49,8 +61,7 @@ async def main():
           conn.commit() #синхроним
           cur.close()
           conn.close()
-          #
-          msg.text='Компании для уведомлений'
+          msg.text ='Компании для прогноза'
       await get_messages(msg)
 
   @bot.message_handler(content_types=['text', "test"])
@@ -59,19 +70,40 @@ async def main():
           markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
           btn1 = types.KeyboardButton('Посмотреть котировки')
           btn2 = types.KeyboardButton('Построить прогноз')
-          btn3 = types.KeyboardButton('Настроить уведомления')
-          markup.add(btn1, btn2, btn3)
+          markup.add(btn1, btn2)
           await bot.send_message(message.from_user.id, 'Выберите, что вы хотите сделать', reply_markup=markup)
 
       elif message.text == 'Посмотреть котировки':
           choice[message.chat.id]="Котировки"
           await bot.send_poll(message.chat.id, question="Выберите, акции каких компаний вы хотите мониторить",
               options=comp_list, allows_multiple_answers=True, is_anonymous=False)
+      elif message.text=="Построить прогноз":
+          choice[message.chat.id]="Предсказания"
+          markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+          btn1 = types.KeyboardButton('Яндекс')
+          btn2 = types.KeyboardButton('Газпром')
+          btn3 = types.KeyboardButton('Лукойл')
+          btn4 = types.KeyboardButton('Сбербанк')
+          btn5 = types.KeyboardButton('Русал')
+          btn6 = types.KeyboardButton('Интер РАО')
+          btn7 = types.KeyboardButton('Норильский никель')
+          btn8 = types.KeyboardButton('Магнит')
+          btn9 = types.KeyboardButton('Полюс')
+          btn10 = types.KeyboardButton('МТС')
+          btn11 = types.KeyboardButton('Северсталь')
+          btn12 = types.KeyboardButton('НОВАТЭК')
+          btn13 = types.KeyboardButton('Татнефть')
+          btn14 = types.KeyboardButton('Сургетнефтегаз')
+          markup.add(btn1, btn2, btn3, btn4, btn5, btn6, btn7, btn8, btn9, btn10, btn11, btn12, btn13, btn14)
+          await bot.send_message(message.from_user.id, 'Выберите, что вы хотите сделать', reply_markup=markup)
 
-      elif message.text=="Настроить уведомления":
-          choice[message.chat.id]="Уведомления"
-          await bot.send_poll(message.chat.id, question="Выберите, новости о каких компаниях вы хотите получать",
-              options=comp_list, allows_multiple_answers=True, is_anonymous=False)
+      if message.text in comp_list_pred:
+          await bot.send_message(message.from_user.id, "AAA")
+          user_id = message.from_user.id
+          text = (f'Компания: {message.text}\n')
+          uploaded_image = prediction_func(message.text)
+          await bot.send_message(user_id, text)
+          await bot.send_photo(user_id, uploaded_image.link)
 
       if message.text == "Компании для котировок":
           markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -124,7 +156,7 @@ async def main():
               await bot.send_message(user_id, text)
               await bot.send_photo(user_id, uploaded_image.link)
               os.remove(filename)
-      elif message.text=="Компании для уведомлений":
+      elif message.text=="Компании для прогноза":
           #
           user_id = message.from_user
           conn = sqlite3.connect('it_user.sql')
@@ -135,7 +167,7 @@ async def main():
           cur.close()
           conn.close()
           user_info = pickle.loads(user_info)
-          #
+
           notif_comp_user=user_info
   await bot.polling(none_stop=True, interval=0)
 

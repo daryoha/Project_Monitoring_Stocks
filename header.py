@@ -1,3 +1,4 @@
+from dl_models.model_main import train_all, predict_fn
 import pandas as pd
 import numpy as np
 import telebot
@@ -14,10 +15,18 @@ import sqlite3 #
 import pickle
 import aiohttp
 import asyncio
+import plotly.graph_objects as go
 from telebot.async_telebot import AsyncTeleBot
 from datetime import date, timedelta
 data_days = pd.read_csv('fin_quotes_per_day.csv')
 CLIENT_ID="f45d25c17f9968c"
+TOKEN = '6749218741:AAFJoqLXOhZvh2kYp617miRKUiYuQHFFUvE'
+bot = AsyncTeleBot(TOKEN)
+comp_list=["Yandex", "Газпром", "Лукойл", "Сбербанк", "Русал", "Интер РАО", "Норильский никель", "Магнит", "МТС"]
+comp_dict={"Yandex":"YNDX", "Газпром":"GAZP", "Лукойл":"LKOH", "Сбербанк":"SBER", "Русал":"RUAL", "Интер РАО":"IRAO", "Норильский никель":"GMKN", "Магнит":"MGNT", "МТС":"MTSS"}
+comp_list_pred=["Яндекс", "Газпром", "Лукойл", "Сбербанк", "Русал", "Интер РАО", "Норильский никель",
+                "Магнит", "МТС", "Полюс", "Роснефть", "Северсталь", "Сургутнефтегаз", "НОВАТЭК", "Татнефть"]
+quotes_day=pd.read_csv("fin_quotes_per_day.csv")
 TOKEN = '6896623536:AAH4QCmavIiBgdkg8v5CVOECX14cM1JjpG4'
 bot = AsyncTeleBot(TOKEN)
 comp_list=["Yandex", "Газпром", "Лукойл", "Сбербанк", "Русал", "Интер РАО", "Норильский никель", "Магнит", "МТС"]

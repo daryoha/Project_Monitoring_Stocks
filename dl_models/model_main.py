@@ -16,7 +16,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from torch.utils.data import Dataset, DataLoader
-from Project_Monitoring_Stocks.dl_models.utils import *
+from dl_models.utils import *
 
 def train_all(comp_dict, all_data=None):
     if all_data is None:
@@ -36,7 +36,7 @@ def predict_fn(company_ru, comp_dict, all_data=None):
     X_train, y_train, X_test, y_test, scaler = get_Xy_train_test(train_data, test_data, company)
         
 
-    PATH = f"/content/Project_Monitoring_Stocks/dl_models/{company}_model.path"
+    PATH = f"dl_models/{company}_model.path"
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     input_size = 1
     num_layers = 2
