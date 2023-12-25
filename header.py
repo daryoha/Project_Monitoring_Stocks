@@ -23,13 +23,11 @@ CLIENT_ID="f45d25c17f9968c"
 TOKEN = '6749218741:AAFJoqLXOhZvh2kYp617miRKUiYuQHFFUvE'
 bot = AsyncTeleBot(TOKEN)
 comp_list=["Yandex", "Газпром", "Лукойл", "Сбербанк", "Русал", "Интер РАО", "Норильский никель", "Магнит", "МТС"]
-comp_dict={"Yandex":"YNDX", "Газпром":"GAZP", "Лукойл":"LKOH", "Сбербанк":"SBER", "Русал":"RUAL", "Интер РАО":"IRAO", "Норильский никель":"GMKN", "Магнит":"MGNT", "МТС":"MTSS"}
+comp_dict={"Yandex":"YNDX", "Газпром":"GAZP", "Лукойл":"LKOH", "Сбербанк":"SBER", "Русал":"RUAL", "Интер РАО":"IRAO",
+           "Норильский никель":"GMKN", "Магнит":"MGNT", "МТС":"MTSS"}
 comp_list_pred=["Яндекс", "Газпром", "Лукойл", "Сбербанк", "Русал", "Интер РАО", "Норильский никель",
                 "Магнит", "МТС", "Полюс", "Роснефть", "Северсталь", "Сургутнефтегаз", "НОВАТЭК", "Татнефть"]
 quotes_day=pd.read_csv("fin_quotes_per_day.csv")
-TOKEN = '6896623536:AAH4QCmavIiBgdkg8v5CVOECX14cM1JjpG4'
-bot = AsyncTeleBot(TOKEN)
-comp_list=["Yandex", "Газпром", "Лукойл", "Сбербанк", "Русал", "Интер РАО", "Норильский никель", "Магнит", "МТС"]
-comp_dict={"Yandex":"YNDX", "Газпром":"GAZP", "Лукойл":"LKOH", "Сбербанк":"SBER", "Русал":"RUAL", "Интер РАО":"IRAO", "Норильский никель":"GMKN", "Магнит":"MGNT", "МТС":"MTSS"}
 notif_comp={}
 choice={}
+company=""
