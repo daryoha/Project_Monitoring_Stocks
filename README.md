@@ -1,1 +1,7 @@
-# Project_Monitoring_Stocks
+# Мониторинг покупки ценных бумаг
+
+Командный проект был выполнен в рамках курса "Углубленный Python" НИУ ВШЭ. Проект выполняли Стрелкова Дарья, Мирзоева Елена, Чиркова Юлия и Амбросимов Алексей.
+
+<div align="center">
+  <img src="https://i.pinimg.com/originals/33/be/d3/33bed33717603db46ec437b66fce3fd0.jpg" alt="two rats" width="400" height="400"/>
+</div>
